@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime
 from typing import List
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, String, Table, Text, func
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, Table, Text, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -13,11 +13,13 @@ class Base(DeclarativeBase):
     """Base class for SQLAlchemy declarative models."""
 
 
+# SQLAlchemy Core `Table()` expects `Column` objects (not ORM `mapped_column`).
+# Using `mapped_column` here causes runtime import errors when the app starts.
 note_tags = Table(
     "note_tags",
     Base.metadata,
-    mapped_column("note_id", UUID(as_uuid=True), ForeignKey("notes.id", ondelete="CASCADE"), primary_key=True),
-    mapped_column("tag_id", UUID(as_uuid=True), ForeignKey("tags.id", ondelete="CASCADE"), primary_key=True),
+    Column("note_id", UUID(as_uuid=True), ForeignKey("notes.id", ondelete="CASCADE"), primary_key=True),
+    Column("tag_id", UUID(as_uuid=True), ForeignKey("tags.id", ondelete="CASCADE"), primary_key=True),
 )
 
 
